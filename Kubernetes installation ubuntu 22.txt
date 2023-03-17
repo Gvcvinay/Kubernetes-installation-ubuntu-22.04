@@ -1,0 +1,72 @@
+
+Kubernetes setup on Ubuntu 22.04
+Let me guess you have 2 machines, with Ubuntu 22.04 installed. First, will be used for the k8s control pane. The second will be used as a worker/pod. Both machines have the same steps for k8s installation. Please notice that the IP addresses I am using are from my network - so add proper IP for Master and worker1
+Here you go for the k8s control pane and worker:
+
+
+apt update
+apt upgrade
+
+echo is this IP of your machine?
+
+echo "<public-ip>  worker1.example.com worker1" >> /etc/hosts
+
+echo "<public-ip> cp1.example.com cp1" >> /etc/hosts
+
+hostnamectl set-hostname cp1
+hostnamectl set-hostname worker1
+
+modprobe br_netfilter
+modprobe overlay
+
+cat << EOF | tee /etc/modules-load.d/k8s-modules.conf
+br_netfilter
+overlay
+EOF
+
+cat << EOF |  tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+sysctl --system
+
+apt-get update ; apt-get install -y containerd
+
+mkdir -p /etc/containerd
+
+containerd config default | tee /etc/containerd/config.toml
+
+sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
+
+systemctl restart containerd
+
+swapoff -a
+
+apt-get install -y apt-transport-https curl
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+apt install -y kubeadm kubelet kubectl
+
+
+After you finish these commands on both machines, you have an exclusive command for the k8s Master and for the worker. Master:
+
+
+kubeadm init --pod-network-cidr=192.168.0.0/16
+
+mkdir -p $HOME/.kube
+
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+
+
+
+Reference link: https://www.vladimircicovic.com/2022/08/kubernetes-setup-on-ubuntu-2204-lts-jammy-jellyfish
