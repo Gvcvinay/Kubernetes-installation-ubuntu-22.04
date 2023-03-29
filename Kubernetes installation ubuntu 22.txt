@@ -64,9 +64,14 @@ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 chown $(id -u):$(id -g) $HOME/.kube/config
 
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml -O
 
+kubectl apply -f calico.yaml
 
+Kubectl get nodes
 
 
 Reference link: https://www.vladimircicovic.com/2022/08/kubernetes-setup-on-ubuntu-2204-lts-jammy-jellyfish
+Reference links: https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises     Note: Open this link and go to manifiest option
+
+
