@@ -74,4 +74,6 @@ Kubectl get nodes
 Reference link: https://www.vladimircicovic.com/2022/08/kubernetes-setup-on-ubuntu-2204-lts-jammy-jellyfish
 Reference links: https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises     Note: Open this link and go to manifiest option
 
+Youtube link: https://www.youtube.com/watch?v=L9kN7E2RN3A
+
 
